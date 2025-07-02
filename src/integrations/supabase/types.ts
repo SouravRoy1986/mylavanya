@@ -512,7 +512,7 @@ export type Database = {
           created_at: string
           product_id: number | null
           service_complete_time: string | null
-          service_id: string | null
+          service_id: string
           service_start_time: string | null
           session_id: string
           status: string | null
@@ -524,7 +524,7 @@ export type Database = {
           created_at?: string
           product_id?: number | null
           service_complete_time?: string | null
-          service_id?: string | null
+          service_id: string
           service_start_time?: string | null
           session_id?: string
           status?: string | null
@@ -536,7 +536,7 @@ export type Database = {
           created_at?: string
           product_id?: number | null
           service_complete_time?: string | null
-          service_id?: string | null
+          service_id?: string
           service_start_time?: string | null
           session_id?: string
           status?: string | null
