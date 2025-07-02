@@ -15,10 +15,15 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-4 right-4 z-[100] flex max-h-screen flex-col-reverse p-0 sm:max-w-[420px]",
+      "fixed top-4 right-4 z-[100] flex max-h-[calc(100vh-2rem)] w-full max-w-[420px] flex-col-reverse p-0",
       className
     )}
-    style={{ pointerEvents: "none" }}
+    style={{ 
+      pointerEvents: "none",
+      position: "fixed",
+      inset: "auto 1rem 0 auto",
+      transform: "none"
+    }}
     {...props}
   />
 ))
