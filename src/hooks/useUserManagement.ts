@@ -141,62 +141,36 @@ export const useUserManagement = () => {
         throw new Error("Email is required");
       }
 
-      if (!userData.PhoneNo) {
-        throw new Error("Phone number is required");
-      }
-
       if (isNewUser) {
-        // Step 1: Create user in auth.users using admin.createUser
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: userData.email_id,
-          phone: userData.PhoneNo,
-          phone_confirm: false, // This will keep phone_confirm_at as null
-          user_metadata: {
-            first_name: userData.FirstName || '',
-            last_name: userData.LastName || '',
-            role: userData.role || 'admin'
+        // Call the edge function to create user
+        const { data, error } = await supabase.functions.invoke('create-admin-user', {
+          body: {
+            email: userData.email_id,
+            firstName: userData.FirstName || '',
+            lastName: userData.LastName || '',
+            role: userData.role || 'admin',
+            phoneNo: userData.PhoneNo || null
           }
         });
 
-        if (authError) {
-          console.error('Auth user creation error:', authError);
-          throw new Error(`Failed to create auth user: ${authError.message}`);
+        if (error) {
+          console.error('Edge function error:', error);
+          throw new Error(error.message || 'Failed to create user');
         }
 
-        if (!authData.user) {
-          throw new Error('Failed to create auth user');
+        if (data?.error) {
+          console.error('User creation error:', data.error);
+          throw new Error(data.error);
         }
 
-        // Step 2: Create user in UserMST table with the auth user's ID
-        const userPayload = {
-          id: authData.user.id, // Use the auth user's ID
-          email_id: userData.email_id,
-          FirstName: userData.FirstName || null,
-          LastName: userData.LastName || null,
-          role: userData.role || "admin",
-          active: true,
-          PhoneNo: userData.PhoneNo || null
-        };
-
-        const { data: userMstData, error: userMstError } = await supabase
-          .from('UserMST')
-          .insert([userPayload])
-          .select();
-
-        if (userMstError) {
-          // If UserMST creation fails, clean up the auth user
-          await supabase.auth.admin.deleteUser(authData.user.id);
-          console.error('UserMST insert error:', userMstError);
-          throw new Error(`Failed to create user profile: ${userMstError.message}`);
-        }
+        console.log('User created successfully via edge function:', data);
         
-        if (userMstData && userMstData.length > 0) {
-          setUsers([...users, userMstData[0] as User]);
-        }
+        // Refresh the users list
+        await fetchUsers();
         
         toast({
           title: "User created successfully",
-          description: `User has been created. They will need to set up their password on first login.`,
+          description: "User has been created. They will need to set up their password on first login.",
         });
       } else if (currentUserEmailId) {
         // Update existing user in UserMST only
