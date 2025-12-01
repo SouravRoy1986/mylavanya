@@ -5,7 +5,7 @@ import { useCustomToast } from "@/context/ToastContext";
 // const API_ENDPOINT =
 //   "https://n8n.srv896137.hstgr.cloud/webhook/621306e2-3aa9-4d20-97a2-22f85e25d694";
 
-const API_ENDPOINT = "https://n8n.srv896137.hstgr.cloud/webhook/lavanyachatbot"
+const API_ENDPOINT = "https://n8n.srv896137.hstgr.cloud/webhook/46ce558e-1b1c-4832-bf4f-ea96838d36dd";
 
 export function useChatbot() {
   const [state, setState] = useState<ChatbotState>({
